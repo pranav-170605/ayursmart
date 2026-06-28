@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatments | AyurSmart</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="treatments.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo">Ayur<span>Smart</span></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="appointment.html">Appointment</a></li>
+                <li><a href="treatments.html" class="active">Treatments</a></li>
+            </ul>
+            <div id="authContainer">
+                <button class="btn btn-gold" onclick="openAuthModal('registration')">Join Us</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="treatments-section">
+        <div class="container">
+            <h1 class="section-header">Traditional <span>Treatments</span></h1>
+            <p class="section-intro">Authentic care rooted in ancient ayurvedic wisdom and modern analysis.</p>
+
+            <div class="treatment-grid">
+                <!-- Card 1 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=2070&auto=format&fit=crop"
+                            alt="Panchakarma">
+                    </div>
+                    <div class="card-content">
+                        <h3>Panchakarma</h3>
+                        <p>A comprehensive detoxification and rejuvenation therapy to cleanse the body of deep-seated
+                            toxins.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="images\Screenshot 2026-04-21 203057.png" alt="Shirodhara">
+                    </div>
+                    <div class="card-content">
+                        <h3>Shirodhara</h3>
+                        <p>Continuous pouring of medicated oils on the forehead to relieve stress and balance the
+                            nervous system.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="images\Screenshot 2026-04-21 203336.png" alt="Abhyanga">
+                    </div>
+                    <div class="card-content">
+                        <h3>Abhyanga</h3>
+                        <p>Traditional full-body massage using warm herbal oils to enhance circulation and immunity.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="images\agnikarma.png" alt="Agnikarma">
+                    </div>
+                    <div class="card-content">
+                        <h3>Agnikarma</h3>
+                        <p>Specialized thermal therapy for instant relief from chronic joint and muscular pain.</p>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=2070&auto=format&fit=crop"
+                            alt="Garbhsanskar">
+                    </div>
+                    <div class="card-content">
+                        <h3>Garbhsanskar</h3>
+                        <p>Holistic prenatal care focusing on the mental and physical wellbeing of both mother and
+                            child.</p>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="treatment-card" onclick="location.href='appointment.html'">
+                    <div class="card-image">
+                        <img src="images\Viddhakarma-scaled.jpg" alt="Vidhakarma">
+                    </div>
+                    <div class="card-content">
+                        <h3>Vidhakarma</h3>
+                        <p>Traditional pricking therapy providing rapid relief from acute pain and inflammation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals (Simplified and handled by script.js) -->
+    <div id="authOverlay" class="modal-overlay"></div>
+    <div id="adminOverlay" class="modal-overlay"></div>
+    <div id="forgotOverlay" class="modal-overlay"></div>
+    <div id="resetOverlay" class="modal-overlay"></div>
+
+</body>
+
+</html>
+ml>

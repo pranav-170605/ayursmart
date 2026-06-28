@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AyurSmart — Appointments</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    .page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
+    .page-header h1 { font-size:22px; font-weight:700; color:#1a6b3c; }
+    .page-header p  { font-size:12px; color:#5a7a5a; margin-top:3px; }
+
+    .btn-add {
+      padding:9px 20px; background:#1a6b3c; color:#fff;
+      border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;
+    }
+    .btn-add:hover { background:#145230; }
+
+    .table-card { background:#fff; border:1px solid #e0e8e0; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.07); overflow:hidden; }
+    .table-toolbar { padding:12px 18px; border-bottom:1px solid #e0e8e0; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .filter-pill { font-size:12px; padding:4px 14px; border-radius:99px; border:1px solid #d0e4d0; background:transparent; color:#4a6a4a; cursor:pointer; font-weight:500; }
+    .filter-pill:hover { background:#f0f4f0; }
+    .filter-pill.active { background:#1a6b3c; color:#fff; border-color:#1a6b3c; }
+    .spacer { flex:1; }
+    .search-box { padding:6px 12px; border:1px solid #d0e4d0; border-radius:8px; font-size:12px; background:#f4f7f4; color:#1a2e1a; width:190px; outline:none; }
+    .search-box:focus { border-color:#1a6b3c; background:#fff; }
+
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { padding:10px 16px; text-align:left; font-size:11px; font-weight:700; color:#7a9a7a; text-transform:uppercase; letter-spacing:.06em; background:#f4f7f4; border-bottom:1px solid #e0e8e0; white-space:nowrap; }
+    tbody td { padding:12px 16px; border-bottom:1px solid #eef3ee; vertical-align:middle; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:#f0f7f2; }
+
+    .patient-cell { display:flex; align-items:center; gap:10px; }
+    .av { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
+    .av-g{background:#e8f5e9;color:#2e7d32} .av-b{background:#e3f2fd;color:#1565c0} .av-a{background:#fff3e0;color:#e65100} .av-p{background:#f3e5f5;color:#6a1b9a}
+
+    .badge { font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; white-space:nowrap; }
+    .badge-paid    {background:#e8f5e9;color:#1b5e20}
+    .badge-pending {background:#fff3e0;color:#bf360c}
+    .badge-unpaid  {background:#ffebee;color:#b71c1c}
+    .badge-call    {background:#e3f2fd;color:#0d47a1}
+    .badge-offline {background:#e8f5e9;color:#1b5e20}
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:#fff; border-radius:14px; width:500px; max-width:95vw; max-height:90vh; overflow-y:auto; padding:28px; box-shadow:0 20px 60px rgba(0,0,0,0.18); }
+    .modal h3 { font-size:16px; font-weight:700; color:#1a5c38; margin-bottom:20px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .form-group { display:flex; flex-direction:column; gap:5px; }
+    .form-group label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#5a7a5a; }
+    .form-group input, .form-group select, .form-group textarea {
+      padding:8px 11px; border:1px solid #d0e4d0; border-radius:8px;
+      font-size:13px; font-family:inherit; color:#1a2e1a; outline:none; background:#fafafa;
+    }
+    .form-group input:focus, .form-group select:focus { border-color:#1a6b3c; background:#fff; }
+    .modal-btns { display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+    .btn-cancel { padding:8px 18px; border:1px solid #d0e4d0; border-radius:8px; background:transparent; color:#5a7a5a; font-size:13px; cursor:pointer; }
+    .btn-save   { padding:8px 22px; background:#1a6b3c; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; }
+    .btn-save:hover { background:#145230; }
+    .btn-delete { padding:8px 16px; background:transparent; color:#b71c1c; border:1px solid #ffcdd2; border-radius:8px; font-size:13px; cursor:pointer; }
+  </style>
+</head>
+<body class="is-loading">
+
+  <div id="authGuardOverlay" class="auth-guard-overlay">
+    <div class="loader-content"><div class="loader-spinner"></div><p>Securing medical dashboard...</p></div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <h2 class="logo">🌿 AyurSmart</h2>
+      <ul>
+        <li onclick="window.location='patientdash.html'">Patients</li>
+        <li class="active">Appointments</li>
+        <li onclick="window.location='dashboard.html'">Remedies</li>
+        <li onclick="window.location='settingdash.html'">Settings</li>
+        <li class="logout-item" onclick="logoutUser()">Logout</li>
+      </ul>
+    </div>
+
+    <div class="main">
+      <div class="page-header">
+        <div><h1>Appointments</h1><p>Manage call and offline appointments, track payments</p></div>
+        <button class="btn-add" onclick="openAddModal()">+ New Appointment</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <button class="filter-pill active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="call">Call</button>
+          <button class="filter-pill" data-filter="offline">Offline</button>
+          <button class="filter-pill" data-filter="paid">Paid</button>
+          <button class="filter-pill" data-filter="pending">Pending</button>
+          <button class="filter-pill" data-filter="unpaid">Unpaid</button>
+          <div class="spacer"></div>
+          <input class="search-box" id="apptSearch" type="text" placeholder="Search patient…"/>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="apptTable">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="apptBody">
+              <tr><td colspan="7" style="text-align:center;padding:32px;color:#7a9a7a">Loading appointments…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW DETAILS POPUP -->
+  <div class="modal-overlay" id="apptModal">
+    <div class="modal">
+      <h3 id="modalTitle">Appointment Details</h3>
+      <div id="detailRows" style="margin-bottom:18px;"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeApptModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD NEW APPOINTMENT MODAL -->
+  <div class="modal-overlay" id="addApptModal">
+    <div class="modal">
+      <h3>New Appointment</h3>
+      <input type="hidden" id="apptId"/>
+      <div class="form-grid">
+        <div class="form-group"><label>Patient Name</label><input id="f-name" type="text" placeholder="Full name"/></div>
+        <div class="form-group"><label>Date</label><input id="f-date" type="date"/></div>
+        <div class="form-group"><label>Time</label><input id="f-time" type="time"/></div>
+        <div class="form-group"><label>Type</label>
+          <select id="f-type"><option value="Offline Visit">Offline (In-person)</option><option value="Call Consultation">Call (Online)</option></select>
+        </div>
+        <div class="form-group"><label>Payment Status</label>
+          <select id="f-payment"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+        <button class="btn-save" onclick="saveAppt()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusBadge" class="status-badge">Checking Connection...</div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = 'http://127.0.0.1:5100/api';
+    const COLORS=['av-g','av-b','av-a','av-p'];
+    function ini(n){return n?n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase():'?';}
+    function unlockPage(){
+      document.body.classList.remove('is-loading');
+      const o=document.getElementById('authGuardOverlay');
+      if(o){o.classList.add('hidden');setTimeout(()=>o.style.display='none',450);}
+    }
+    function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+    function setStatus(ok){const b=document.getElementById('statusBadge');if(!b)return;b.textContent=ok?'🟢 Connected':'🔴 Offline';b.classList.toggle('offline',!ok);}
+
+    function payBadge(p, utr, status){
+      const method = (p || '').toLowerCase();
+      const s = (status || '').toLowerCase();
+      
+      // Map display badges
+      if (method === 'paid' || method === 'upi' || method === 'completed') {
+        return `<span class="badge badge-paid">Paid</span>${utr ? `<div style="font-size:10px;color:#7a9a7a;margin-top:2px;font-weight:600;">UTR: ${utr}</div>` : ''}`;
+      }
+      if (method === 'pending' || s.includes('pending')) {
+        return `<span class="badge badge-pending">Pending</span>${utr ? `<div style="font-size:10px;color:#7a9a7a;margin-top:2px;font-weight:600;">UTR: ${utr}</div>` : ''}`;
+      }
+      if (method === 'unpaid') {
+        return `<span class="badge badge-unpaid">Unpaid</span>`;
+      }
+      return `<span class="badge">${p || '—'}</span>`;
+    }
+    function typeBadge(t){return t==='Call Consultation'?'<span class="badge badge-call">Call</span>':'<span class="badge badge-offline">Offline</span>';}
+    function fmtDate(d){if(!d)return'—';const parts=d.split('-');if(parts.length!==3)return d; const[y,m,day]=parts;const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${day} ${mo[+m-1]} ${y}`;}
+    function fmtTime(t){
+      if(!t) return '—';
+      if(t.toUpperCase().includes('AM') || t.toUpperCase().includes('PM')) return t;
+      const parts=t.split(':');
+      if(parts.length<2) return t; 
+      let h=parseInt(parts[0], 10);
+      const min=parts[1].substring(0,2);
+      const ap=h>=12?'PM':'AM';
+      return `${(h%12||12).toString().padStart(2,'0')}:${min} ${ap}`;
+    }
+
+    let allAppts = [];
+
+    function renderTable(appts){
+      const tbody=document.getElementById('apptBody');
+      if(!appts.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:#7a9a7a">No appointments found.</td></tr>';return;}
+      tbody.innerHTML=appts.map((a,i)=>`
+        <tr>
+          <td><div class="patient-cell"><div class="av ${COLORS[i%4]}">${ini(a.name||'?')}</div><span>${a.name||'—'}</span></div></td>
+          <td>${fmtDate(a.appt_date)}</td>
+          <td>${fmtTime(a.appt_time)}</td>
+          <td>${typeBadge(a.consult_mode)}</td>
+          <td>${payBadge(a.payment_method, a.payment ? a.payment.transaction_id : null, a.status)}</td>
+          <td><span class="badge" style="${a.status === 'Cancelled' ? 'background:#ffebee;color:#b71c1c' : 'background:#e8f5e9;color:#1b5e20'}">${a.status||'Booked'}</span></td>
+          <td>
+            <button onclick='viewApptDetails(${JSON.stringify(a).replace(/'/g, "&#39;")})' style="padding:5px 14px;background:#1a6b3c;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">View</button>
+            ${a.status !== 'Cancelled' ? `<button onclick="cancelAppt(${a.id})" style="padding:5px 10px;background:#fff;color:#b71c1c;border:1px solid #ffcdd2;border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px;">Cancel</button>` : ''}
+          </td>
+        </tr>`).join('');
+    }
+
+    window.openAddModal = function(){
+      document.getElementById('apptId').value='';
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+      const timeStr = now.toTimeString().substring(0,5);
+      
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-date').value = dateStr;
+      document.getElementById('f-time').value = timeStr;
+      
+      const ft=document.getElementById('f-type');if(ft)ft.value='Offline Visit';
+      const fp=document.getElementById('f-payment');if(fp)fp.value='Pending';
+      document.getElementById('addApptModal').classList.add('open');
+    };
+
+    // ── View Details Popup ──
+    window.viewApptDetails = function(a) {
+      document.getElementById('modalTitle').textContent = a.name || 'Appointment Details';
+      let meetingHtml = '';
+      if (a.meeting_link) {
+        meetingHtml = `
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+            <span style="color:#5a7a5a">🎥 Meeting Link</span>
+            <a href="${a.meeting_link}" target="_blank" style="color:#1a6b3c;font-weight:600;text-decoration:none;">Join Call ↗</a>
+          </div>`;
+      }
+      document.getElementById('detailRows').innerHTML = `
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">👤 Name</span><span style="font-weight:500">${a.name||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">📅 Date</span><span style="font-weight:500">${fmtDate(a.appt_date)||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">⏰ Time</span><span style="font-weight:500">${fmtTime(a.appt_time)||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">📋 Consultation Mode</span><span style="font-weight:500">${a.consult_mode||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">💳 Payment</span><span style="font-weight:500">${a.payment_method||'—'}</span>
+        </div>
+        ${a.payment && a.payment.transaction_id ? `
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">🔢 UTR / Trans ID</span><span style="font-weight:600;color:#1a6b3c">${a.payment.transaction_id}</span>
+        </div>` : ''}
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">📌 Status</span><span style="font-weight:600;color:#1a6b3c">${a.status||'Booked'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">📞 Phone</span><span style="font-weight:500">${a.phone||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef3ee;font-size:13px;">
+          <span style="color:#5a7a5a">✉️ Email</span><span style="font-weight:500">${a.email||'—'}</span>
+        </div>
+        ${meetingHtml}`;
+      document.getElementById('apptModal').classList.add('open');
+    };
+
+    window.closeApptModal = function(){
+      document.getElementById('apptModal').classList.remove('open');
+    };
+
+    window.closeAddModal = function(){
+      document.getElementById('addApptModal').classList.remove('open');
+    };
+
+    window.saveAppt = async function(){
+      const data={
+        name:           document.getElementById('f-name').value.trim(),
+        appt_date:      document.getElementById('f-date').value,
+        appt_time:      document.getElementById('f-time').value,
+        consult_mode:   document.getElementById('f-type').value,
+        payment_method: document.getElementById('f-payment').value,
+      };
+      if(!data.name){alert('Please enter patient name.');return;}
+      if(!data.appt_date||!data.appt_time){alert('Please select date and time.');return;}
+      try{
+        const res = await fetch(`${API_BASE}/appointments`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            name: data.name, phone: '', email: '',
+            appt_date: data.appt_date, appt_time: data.appt_time,
+            consult_mode: data.consult_mode, payment_method: data.payment_method
+          }),
+          credentials: 'omit'
+        });
+        if (!res.ok) throw new Error('Create failed');
+        showToast('✅ Appointment added');
+        closeAddModal();
+        setStatus(true);
+        loadAppointments();
+      }catch(e){console.error(e);showToast('⚠️ Save failed');setStatus(false);}
+    };
+
+    window.cancelAppt = async function(aid) {
+      if(!confirm('Are you sure you want to cancel this appointment?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/appointments/cancel/${aid}`, {
+          method: 'POST',
+          credentials: 'include' // Important to send admin session
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ Appointment cancelled');
+          loadAppointments();
+        } else {
+          showToast('⚠️ ' + (data.message || 'Cancellation failed'));
+        }
+      } catch(e) {
+        console.error(e);
+        showToast('⚠️ Connection error');
+      }
+    };
+
+    window.logoutUser = async function(){
+      try{await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });}catch(e){}
+      localStorage.removeItem('ayurSession');
+      window.location.href='index.html';
+    };
+
+    // Filters
+    document.querySelectorAll('.filter-pill').forEach(pill=>{
+      pill.addEventListener('click',()=>{
+        document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+        pill.classList.add('active');
+        const f = pill.dataset.filter;
+        
+        if (f === 'all') {
+          renderTable(allAppts);
+          return;
+        }
+
+        const filtered = allAppts.filter(a => {
+          const mode = (a.consult_mode || 'offline').toLowerCase();
+          const pay = (a.payment_method || '').toLowerCase();
+          const stat = (a.status || '').toLowerCase();
+
+          if (f === 'call') return mode.includes('call');
+          if (f === 'offline') return mode.includes('offline');
+          if (f === 'paid') return pay === 'paid' || pay === 'upi' || pay === 'completed';
+          if (f === 'pending') return pay === 'pending' || stat.includes('pending');
+          if (f === 'unpaid') return pay === 'unpaid';
+          return false;
+        });
+        
+        renderTable(filtered);
+      });
+    });
+
+    document.getElementById('apptSearch').addEventListener('input',function(){
+      const q=this.value.toLowerCase();
+      renderTable(allAppts.filter(a=>(a.name||'').toLowerCase().includes(q)));
+    });
+
+    document.getElementById('apptModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeApptModal();});
+    document.getElementById('addApptModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAddModal();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApptModal();closeAddModal();}});
+
+    async function loadAppointments() {
+       try {
+         const res = await fetch(`${API_BASE}/appointments`, { credentials: 'omit' });
+         if(!res.ok) throw new Error('Fetch failed');
+         const data = await res.json();
+         if(data.success) {
+            allAppts = (data.appointments || []).reverse();
+            renderTable(allAppts);
+            setStatus(true);
+         }
+       } catch(err) {
+         console.error('MySQL load error:', err);
+         setStatus(false);
+       }
+    }
+
+    function checkAuth() {
+      const sessionStr = localStorage.getItem('ayurSession');
+      if (sessionStr) {
+        try {
+          const sess = JSON.parse(sessionStr);
+          if (sess.role === 'admin') {
+            unlockPage();
+            loadAppointments();
+            return;
+          }
+        } catch(e) {}
+      }
+      window.location.href = 'index.html';
+    }
+
+    window.addEventListener('load',()=>{
+      checkAuth();
+      setTimeout(()=>{if(document.body.classList.contains('is-loading'))unlockPage();},3000);
+    });
+  </script>
+</body>
+</html>

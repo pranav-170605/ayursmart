@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment | AyurSmart</title>
+  <link rel="stylesheet" href="appointment.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body class="is-loading">
+
+  <!-- Auth Guard Loading Overlay -->
+  <div id="authGuardOverlay" class="auth-guard-overlay">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p>Verifying secure session...</p>
+    </div>
+  </div>
+
+  <nav class="navbar">
+
+
+    <div class="nav-inner">
+      <div class="logo">Ayur<span>Smart</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="appointment.html" id="navAppt" onclick="return navToAppointment(event)">Appointment</a></li>
+        <li><a href="treatments.html">Treatments</a></li>
+      </ul>
+      <div id="authContainer">
+        <button class="btn btn-gold" id="authBtn" onclick="openAuthModal('registration')">Join Us</button>
+      </div>
+    </div>
+  </nav>
+  <main class="page-wrapper">
+
+    <div class="page-title">
+      <h1>Book Your Appointment</h1>
+      <p>Select a date, time, and consultation preference to get started.</p>
+    </div>
+
+    <div class="grid-container">
+
+      <!-- ─── LEFT: Calendar + Time Slots (spans full left column) ─── -->
+      <section class="card card--calendar" id="card-datetime">
+        <div class="card-label">Step 1</div>
+        <h2 class="card-title">Choose Date &amp; Time</h2>
+
+        <div class="calendar-wrap">
+          <div class="cal-header">
+            <button class="cal-nav" id="prevMonth">&#8249;</button>
+            <span id="calMonthYear">June 2025</span>
+            <button class="cal-nav" id="nextMonth">&#8250;</button>
+          </div>
+          <div class="cal-days-header">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span>
+            <span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <div class="selected-date-display" id="selectedDateDisplay">No date selected</div>
+
+        <h3 class="subsection-title">Available Time Slots</h3>
+        <div class="time-slots" id="timeSlots"></div>
+      </section>
+
+      <!-- ─── RIGHT COLUMN: all 3 steps stacked ─── -->
+      <div class="right-column">
+
+        <!-- Step 2: Consultation Mode -->
+        <section class="card card--mode" id="card-mode">
+          <div class="card-label">Step 2</div>
+          <h2 class="card-title">Consultation Mode</h2>
+          <div class="mode-buttons">
+            <button class="mode-btn" id="btnCall" onclick="selectMode('call')">
+              <span class="mode-icon">📞</span>
+              <span class="mode-label">Call Consultation</span>
+              <span class="mode-sub">Talk to doctor remotely</span>
+            </button>
+            <button class="mode-btn" id="btnOffline" onclick="selectMode('offline')">
+              <span class="mode-icon">🏥</span>
+              <span class="mode-label">Offline Visit</span>
+              <span class="mode-sub">Visit the clinic in person</span>
+            </button>
+          </div>
+          <div class="phone-input-wrap hidden" id="phoneWrap">
+            <label for="phoneInput">Your Phone Number</label>
+            <div class="input-group">
+              <span class="input-prefix">+91</span>
+              <input type="tel" id="phoneInput" placeholder="98765 43210" maxlength="10" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3: Payment -->
+        <section class="card card--payment" id="card-payment">
+          <div class="card-label">Step 3</div>
+          <h2 class="card-title">Payment</h2>
+          <div class="fee-display">
+            <span class="fee-label">Consultation Fee</span>
+            <span class="fee-amount">₹50</span>
+          </div>
+          <div class="form-group">
+            <label for="paymentMethod">Select Payment Method</label>
+            <div class="select-wrap">
+              <select id="paymentMethod" onchange="onPaymentMethodChange()">
+                <option value="upi" selected>UPI (PhonePe, Google Pay, etc.)</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+          <div class="upi-section" id="upiSection">
+            <div class="qr-container">
+              <img src="D:\pranavqr.jpeg" alt="UPI QR Code" class="qr-image" />
+              <p class="qr-hint">Scan with any UPI app</p>
+            </div>
+            <div class="form-group">
+              <label for="transactionId">Enter Transaction ID</label>
+              <input type="text" id="transactionId" placeholder="12-digit number (e.g. 123456789012)" />
+              <p class="input-hint">Enter the transaction ID from your UPI app after payment.</p>
+            </div>
+          </div>
+          <div class="generic-notice hidden" id="genericNotice">
+            <div class="notice-icon">🔒</div>
+            <p>You'll be redirected to a secure payment gateway after booking.</p>
+          </div>
+          <button class="btn btn--confirm" id="confirmPaymentBtn" onclick="confirmPayment()">
+            ✓ Confirm Payment
+          </button>
+        </section>
+
+        <!-- Step 4: Status + Book -->
+        <section class="card card--status" id="card-status">
+          <div class="card-label">Step 4</div>
+          <h2 class="card-title">Review &amp; Book</h2>
+          <div class="summary-grid">
+            <div class="summary-item"><span class="summary-key">📅 Date</span><span class="summary-val"
+                id="sumDate">—</span></div>
+            <div class="summary-item"><span class="summary-key">⏰ Time</span><span class="summary-val"
+                id="sumTime">—</span></div>
+            <div class="summary-item"><span class="summary-key">📋 Mode</span><span class="summary-val"
+                id="sumMode">—</span></div>
+            <div class="summary-item"><span class="summary-key">💳 Payment</span><span class="summary-val"
+                id="sumPayment">—</span></div>
+          </div>
+          <div class="payment-status-wrap">
+            <div class="payment-status" id="paymentStatus">
+              <span class="status-dot unpaid"></span>
+              <span class="status-text">Payment Pending</span>
+            </div>
+          </div>
+          <button class="btn btn--book" id="bookBtn" onclick="bookAppointment()">
+            Book Appointment →
+          </button>
+          <div class="toast hidden" id="toast"></div>
+        </section>
+
+      </div><!-- end .right-column -->
+
+    </div><!-- end .grid-container -->
+
+    <div class="modal-overlay hidden" id="successModal">
+      <div class="modal">
+        <div class="modal-icon">✅</div>
+        <h2>Appointment Booked!</h2>
+        <p class="modal-subtitle">Your wellness journey begins here.</p>
+
+        <div class="booking-details-card">
+          <div class="detail-row">
+            <span class="detail-label">📅 Date:</span>
+            <span class="detail-value" id="modalDate">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">⏰ Time:</span>
+            <span class="detail-value" id="modalTime">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">📋 Mode:</span>
+            <span class="detail-value" id="modalMode">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">💰 Amount:</span>
+            <span class="detail-value" id="modalAmount">₹50</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">💳 Trans ID:</span>
+            <span class="detail-value" id="modalTransId">—</span>
+          </div>
+        </div>
+
+        <div id="modalMeetingInfo" class="modal-meeting hidden">
+          <hr>
+          <p><strong>🎥 Call Consultation Link:</strong></p>
+          <div class="link-box">
+            <code id="meetingLinkText"></code>
+            <button onclick="copyMeetingLink()" class="btn-copy">Copy</button>
+          </div>
+          <a id="joinNowBtn" href="#" target="_blank" class="btn btn--join">Join Meeting Now</a>
+          <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">Please save this link for your scheduled time.
+          </p>
+        </div>
+        <button class="btn btn--book" onclick="closeSuccessModal()">Done</button>
+      </div>
+    </div>
+
+    <!-- User Login/Register Modal -->
+    <div id="authOverlay" class="modal-overlay hidden">
+      <div class="auth-card">
+        <button class="auth-close" onclick="closeModals()" title="Close">&#10005;</button>
+        <div class="auth-panel">
+          <div class="auth-panel-inner">
+            <div class="auth-logo">Ayur<span>Smart</span></div>
+            <div class="auth-leaf">&#127807;</div>
+            <p class="auth-tagline">Ancient Wisdom,<br>Intelligent Care.</p>
+            <div class="auth-divider"></div>
+            <p class="auth-sub">Balance your Prakriti.<br>Begin your healing journey.</p>
+          </div>
+        </div>
+        <div class="auth-form-panel">
+          <div class="auth-tabs-row">
+            <button id="tabLogin" class="auth-tab active" onclick="toggleAuth('login')">Sign In</button>
+            <button id="tabRegister" class="auth-tab" onclick="toggleAuth('register')">Register</button>
+            <div class="auth-tab-indicator" id="tabIndicator"></div>
+          </div>
+          <form id="authForm" onsubmit="handleAuth(event)" autocomplete="off">
+            <div id="registerFields" style="display:none;">
+              <div class="field-group">
+                <label class="field-label">Full Name</label>
+                <input type="text" id="userName" placeholder="e.g. Arjun Mehta" class="auth-input">
+              </div>
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">Age</label>
+                  <input type="number" id="userAge" placeholder="Age" class="auth-input">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Gender</label>
+                  <select id="userGender" class="auth-input auth-select">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Phone Number</label>
+                <input type="text" id="userPhone" placeholder="+91 98765 43210" class="auth-input">
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Username</label>
+              <input type="text" id="userUsername" placeholder="your_username" class="auth-input" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Email Address</label>
+              <input type="email" id="userEmail" placeholder="you@email.com" class="auth-input" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Password</label>
+              <div class="pass-wrap">
+                <input type="password" id="userPass" placeholder="Min. 8 chars, 1 uppercase, 1 number"
+                  class="auth-input" required>
+                <button type="button" class="toggle-pass" onclick="togglePassVis()">&#128065;</button>
+              </div>
+            </div>
+            <div class="captcha-row">
+              <canvas id="captchaCanvas" width="140" height="46"></canvas>
+              <button type="button" onclick="generateCaptcha()" class="captcha-refresh" title="Refresh">&#8635;</button>
+              <input type="text" id="captchaInput" placeholder="Enter CAPTCHA" class="auth-input captcha-inp" required>
+            </div>
+            <p class="captcha-error" id="captchaError" style="display:none;">Incorrect CAPTCHA. Please try again.</p>
+            <button type="submit" class="auth-submit" id="authSubmitBtn">Sign In</button>
+            <a href="javascript:void(0)" class="forgot-link" id="forgotLink" onclick="openForgotModal()">Forgot your
+              password?</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminOverlay" class="modal-overlay hidden">
+      <div class="modal-card admin-border">
+        <button class="close-btn" onclick="closeModals()">×</button>
+        <h2 class="modal-title">Doctor Portal</h2>
+        <form onsubmit="handleAdminLogin(event)">
+          <input type="username" id="adminEmail" placeholder="username" class="input-field" required>
+          <input type="password" id="adminPass" placeholder="Admin Password" class="input-field" required>
+          <button type="submit" class="btn btn-green w-100">Login to Dashboard</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="forgotOverlay" class="modal-overlay hidden">
+      <div class="modal-card">
+        <button class="close-btn" onclick="closeModals()">×</button>
+        <h2 class="modal-title">Reset Password</h2>
+        <p>Enter your registered email to receive a reset link.</p>
+        <form onsubmit="handleForgot(event)">
+          <input type="email" id="forgotEmail" placeholder="Email Address" class="input-field" required>
+          <button type="submit" class="btn btn-green w-100">Send Reset Link</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="resetOverlay" class="modal-overlay hidden">
+      <div class="modal-card">
+        <button class="close-btn" onclick="closeModals()">×</button>
+        <h2 class="modal-title">Create New Password</h2>
+        <form onsubmit="handleReset(event)">
+          <input type="password" id="newPassword" placeholder="New Password" class="input-field" required>
+          <input type="password" id="confirmPassword" placeholder="Confirm Password" class="input-field" required>
+          <button type="submit" class="btn btn-green w-100">Reset Password</button>
+        </form>
+      </div>
+    </div>
+    <script src="appointment.js"></script>
+
+</body>
+
+</html>

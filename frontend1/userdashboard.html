@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AyurSmart Patient Dashboard</title>
+    <link rel="stylesheet" href="userdash.css" />
+</head>
+
+<body>
+
+    <!-- ── AUTH GUARD OVERLAY ── -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-loader">
+            <div class="spinner"></div>
+            <p>Loading your wellness profile…</p>
+        </div>
+    </div>
+
+    <div class="shell">
+
+        <!-- ── SIDEBAR ── -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span>🌿 <span>AyurSmart</span></span>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active" href="#profile">
+                    <span class="nav-icon">👤</span><span>MY PROFILE</span>
+                </a>
+                <a class="nav-item" href="#quiz">
+                    <span class="nav-icon">📋</span><span>QUIZ RESULT</span>
+                </a>
+                <a class="nav-item" href="#appointments">
+                    <span class="nav-icon">📅</span><span>APPOINTMENTS</span>
+                </a>
+                <a class="nav-item" href="#remedies">
+                    <span class="nav-icon">🌿</span><span>REMEDIES</span>
+                </a>
+                <a class="nav-item" href="#journal">
+                    <span class="nav-icon">📓</span><span>MESSAGES</span>
+                </a>
+                <!-- Spacer pushes profile + logout to bottom -->
+                <div style="flex:1"></div>
+
+                <!-- User Profile Button -->
+                <div class="nav-profile-card" id="navProfileCard">
+                    <div class="nav-profile-avatar" id="navProfileAvatar">👤</div>
+                    <div class="nav-profile-info">
+                        <div class="nav-profile-name" id="navProfileName">My Profile</div>
+                        <div class="nav-profile-sub">My Account</div>
+                    </div>
+                </div>
+
+                <a class="nav-item" id="logoutBtn" href="#" style="color:rgba(255,160,160,0.85)">
+                    <span class="nav-icon">🚪</span><span>LOGOUT</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ── MAIN ── -->
+        <div class="main">
+
+            <!-- Topbar -->
+            <div class="topbar">
+                <h1 class="topbar-title">My AyurSmart Profile</h1>
+                <div class="topbar-user">
+                    <div class="welcome-text">
+                        <div class="name" id="welcomeName">Welcome, —</div>
+                        <div class="joined" id="joinedDate">—</div>
+                    </div>
+                    <div class="avatar" id="avatarInitials">—</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="content">
+
+                <!-- ── MY PRAKRITI ── -->
+                <div class="card prakriti-card" id="prakritiCard">
+                    <div class="card-head">
+                        <h3>MY PRAKRITI</h3>
+                        <span style="font-size:16px">🌿</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="dosha-display" id="doshDisplay">
+                            <div class="dosha-icon-big" id="doshaEmoji">🔥</div>
+                            <div class="dosha-letters" id="doshaLetters"></div>
+                            <div class="dosha-label">Dominant Dosha:</div>
+                            <div class="dosha-name" id="doshaName">Loading…</div>
+                            <div class="dosha-pct" id="doshaPct"></div>
+                        </div>
+                        <!-- Decorative wave line -->
+                        <div class="dosha-line">
+                            <svg viewBox="0 0 260 50" width="100%" height="50" fill="none">
+                                <path d="M0 30 Q30 10 60 28 Q90 46 120 26 Q150 8 180 28 Q210 46 240 24 Q250 18 260 22"
+                                    stroke="#D4AF37" stroke-width="1.8" fill="none" opacity="0.5" />
+                            </svg>
+                        </div>
+                        <p class="dosha-desc" id="doshaDesc">Your energy is sharp and focused. You are warm and
+                            balanced.</p>
+                        <button class="btn-gold" onclick="window.location.href='quiz.html'">Update Quiz</button>
+                    </div>
+                    <div class="leaf-deco">🍃</div>
+                </div>
+
+                <!-- ── PERSONALIZED REMEDIES ── -->
+                <div class="card remedies-card" id="remediesCard">
+                    <div class="card-head">
+                        <h3>PERSONALIZED REMEDIES</h3>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Recommended Foods -->
+                        <div class="remedies-section">
+                            <div class="rem-section-header recommended">
+                                <span class="rem-icon">🥗</span>
+                                <span class="rem-section-title">Recommended Foods</span>
+                                <button class="rem-toggle-btn" onclick="toggleSection('recommended')">▾</button>
+                            </div>
+                            <ul class="rem-list" id="recommendedList">
+                                <li><span class="skeleton" style="width:120px;height:13px">&nbsp;</span></li>
+                                <li><span class="skeleton" style="width:90px;height:13px">&nbsp;</span></li>
+                            </ul>
+                            <div class="rem-section-header prohibited" style="margin-top:18px">
+                                <span class="rem-icon">🚫</span>
+                                <span class="rem-section-title">Prohibited Foods</span>
+                                <button class="rem-toggle-btn" onclick="toggleSection('prohibited')">▾</button>
+                            </div>
+                            <ul class="rem-list" id="prohibitedList">
+                                <li><span class="skeleton" style="width:110px;height:13px">&nbsp;</span></li>
+                                <li><span class="skeleton" style="width:80px;height:13px">&nbsp;</span></li>
+                            </ul>
+                            <button class="rem-see-details" id="seeDetailsBtn"
+                                onclick="alert('Full remedy details coming soon.')">
+                                See Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── MY APPOINTMENTS ── -->
+                <div class="card appointments-card" id="appointmentsCard">
+                    <div class="card-head">
+                        <h3>MY APPOINTMENTS</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="appt-list" id="apptList">
+                            <p style="color:#9a9a88;font-size:13px">Loading appointments…</p>
+                        </div>
+                        <button class="btn-book" onclick="openBookModal()">BOOK NEW APPOINTMENT</button>
+                    </div>
+                </div>
+
+                <!-- ── HEALTH JOURNAL ── -->
+                <div class="card journal-card" id="journalCard">
+                    <div class="card-head">
+                        <h3>HEALTH JOURNAL / NOTES</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="journal-list" id="journalList">
+                            <p style="color:#9a9a88;font-size:13px">Loading journal…</p>
+                        </div>
+                        <div class="journal-add">
+                            <input class="journal-input" id="journalInput" type="text" placeholder="Add a note…" />
+                            <button class="btn-journal-add" onclick="addJournalEntry()">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content -->
+        </div><!-- /main -->
+    </div><!-- /shell -->
+
+    <!-- ── BOOK APPOINTMENT MODAL ── -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="modal">
+            <h3>Book New Appointment</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input class="form-control" id="b-date" type="date" onchange="loadBookedSlots()" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Time Slot</label>
+                    <div id="slotGrid" class="slot-grid-container">
+                        <p style="color:#9a9a88;font-size:13px">
+                            Select a date and doctor to see available slots
+                        </p>
+                    </div>
+                    <input type="hidden" id="b-time" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doctor</label>
+                    <select class="form-control" id="b-doctor" onchange="loadBookedSlots()">
+                        <option value="">Select doctor…</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mode</label>
+                    <select class="form-control" id="b-mode">
+                        <option value="Offline">Offline (In-person)</option>
+                        <option value="Call">Call (Online)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-control" id="b-type">
+                        <option value="Consultation">Consultation</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Emergency">Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group" id="b-phone-group" style="display:none;">
+                    <label class="form-label">Phone Number</label>
+                    <input class="form-control" id="b-phone" type="tel" placeholder="10-digit number" maxlength="10" />
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">Scan to Pay (₹50)</label>
+                    <div class="qr-container-dash">
+                        <img src="images/qrcode.jpeg" alt="Payment QR Code" class="qr-image-dash">
+                        <p class="qr-hint-dash">Pay using any UPI app (GPay, PhonePe, etc.)</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">UTR / Payment Ref</label>
+                    <input class="form-control" id="b-utr" type="text" placeholder="e.g. 1234xxxx9012" />
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">Notes (optional)</label>
+                    <input class="form-control" id="b-notes" type="text" placeholder="Any notes for the doctor…" />
+                </div>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel-modal" onclick="closeBookModal()">Cancel</button>
+                <button class="btn-submit-modal" onclick="submitBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SUCCESS MODAL ── -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal success-modal">
+            <div class="success-icon">✓</div>
+            <h3>Appointment Booked!</h3>
+            <div class="success-details">
+                <div class="s-row"><span>Date:</span> <strong id="s-date">—</strong></div>
+                <div class="s-row"><span>Time:</span> <strong id="s-time">—</strong></div>
+                <div class="s-row"><span>Type:</span> <strong id="s-type">—</strong></div>
+            </div>
+
+            <div id="s-call-box" class="call-confirmation-box" style="display:none;">
+                <hr style="margin: 15px 0; opacity: 0.2;">
+                <p class="call-msg">🎥 <strong>Call Consultation Link Generated:</strong></p>
+                <div class="link-display-box">
+                    <code id="s-link">https://meet.google.com/xxx-xxxx-xxx</code>
+                    <button class="btn-copy-small" onclick="copyModalLink()">Copy</button>
+                </div>
+                <a href="#" id="s-join-btn" target="_blank" class="btn-join-now">Join Call Now</a>
+                <p class="call-note">Please save this link. It will also be available in your appointment list.</p>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-submit-modal" style="width:100%" onclick="closeSuccessModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CANCEL CONFIRM MODAL ── -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal cancel-modal">
+            <div class="cancel-icon">⚠️</div>
+            <h3>Cancel Appointment?</h3>
+            <p class="cancel-modal-msg">Are you sure you want to cancel this appointment? This action cannot be undone.
+            </p>
+            <div class="modal-btns">
+                <button class="btn-cancel-modal" onclick="closeCancelModal()">No, Keep It</button>
+                <button class="btn-submit-modal btn-danger" id="confirmCancelBtn">Yes, Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="userdashjs.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AyurSmart | Ancient Wisdom, Intelligent Care</title>
+  <link rel="stylesheet" href="style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Jost:wght@400;600&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="logo">Ayur<span>Smart</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="appointment.html" id="navAppt" onclick="return navToAppointment(event)">Appointment</a></li>
+        <li><a href="treatments.html">Treatments</a></li>
+        <li><a href="javascript:void(0)" onclick="openAdminModal()">Admin Login</a></li>
+        <li><a href="javascript:void(0)" onclick="openAboutModal()">About Us</a></li>
+      </ul>
+      <div id="authContainer">
+        <button class="btn btn-gold" id="authBtn" onclick="openAuthModal('registration')">Join Us</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Ancient Wisdom,<br><span>Intelligent Care.</span></h1>
+      <p>Discover your unique Prakriti and balance your life with personalized insights.</p>
+      <div class="btn-group">
+        <button class="quiz-btn" onclick="openQuiz()">Start Prakruti Quiz</button>
+        <button class="time-btn" onclick="openTimingsModal()">Check Timings</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── CLINIC TIMINGS MODAL ── -->
+  <div id="timingsOverlay" class="modal-overlay" style="display:none;" onclick="closeTimingsModal(event)">
+    <div class="timings-card">
+      <button class="timings-close" onclick="document.getElementById('timingsOverlay').style.display='none'"
+        title="Close">&#10005;</button>
+
+      <div class="timings-header">
+        <div class="timings-icon">🕐</div>
+        <h2 class="timings-title">Clinic <span>Timings</span></h2>
+        <p class="timings-subtitle">Walk-ins welcome · Appointments preferred</p>
+      </div>
+
+      <div class="timings-body">
+
+        <div class="timings-row">
+          <div class="day-group">
+            <span class="day-badge weekday">Mon – Sat</span>
+          </div>
+          <div class="slot-group">
+            <span class="time-slot morning">🌅 10:00 AM – 1:00 PM</span>
+            <span class="time-slot evening">🌇 5:00 PM – 8:00 PM</span>
+          </div>
+        </div>
+
+        <div class="timings-divider"></div>
+
+        <div class="timings-row holiday-row">
+          <div class="day-group">
+            <span class="day-badge sunday">Sunday</span>
+          </div>
+          <div class="slot-group">
+            <span class="time-slot closed">🚫 Closed — Public Holiday</span>
+          </div>
+        </div>
+
+        <div class="timings-note">
+          <span class="note-icon">📞</span>
+          <p>For emergency consultations, call us at <strong>+91 98765 43210</strong></p>
+        </div>
+      </div>
+
+      <div class="timings-footer">
+        <button class="btn btn-gold" onclick="location.href='appointment.html'">Book Appointment</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ── Timings Modal ── */
+    #timingsOverlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 9999;
+    }
+
+    .timings-card {
+      background: #fff;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 460px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+      position: relative;
+    }
+
+    .timings-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.25);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background 0.2s;
+    }
+
+    .timings-close:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .timings-header {
+      background: linear-gradient(135deg, #4a7c59, #2e5339);
+      color: #fff;
+      text-align: center;
+      padding: 32px 24px 24px;
+    }
+
+    .timings-icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .timings-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      margin: 0 0 4px;
+      font-weight: 600;
+    }
+
+    .timings-title span {
+      color: #d4af37;
+    }
+
+    .timings-subtitle {
+      font-size: 0.82rem;
+      opacity: 0.82;
+      margin: 0;
+    }
+
+    .timings-body {
+      padding: 24px 28px 16px;
+    }
+
+    .timings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .day-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .day-badge.weekday {
+      background: #eaf4ed;
+      color: #2e5339;
+    }
+
+    .day-badge.sunday {
+      background: #fdecea;
+      color: #c0392b;
+    }
+
+    .slot-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .time-slot {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    .time-slot.morning {
+      background: #fff8e1;
+      color: #b8860b;
+    }
+
+    .time-slot.evening {
+      background: #fce4ec;
+      color: #880e4f;
+    }
+
+    .time-slot.closed {
+      background: #fdecea;
+      color: #c0392b;
+    }
+
+    .timings-divider {
+      border: none;
+      border-top: 1px dashed #e0e0e0;
+      margin: 4px 0;
+    }
+
+    .timings-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #f5f9f6;
+      border-left: 3px solid #4a7c59;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 16px;
+    }
+
+    .note-icon {
+      font-size: 1.1rem;
+    }
+
+    .timings-note p {
+      margin: 0;
+      font-size: 0.83rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .timings-footer {
+      padding: 0 28px 24px;
+      text-align: center;
+    }
+
+    .timings-footer .btn-gold {
+      width: 100%;
+      padding: 12px;
+      font-size: 0.95rem;
+      border-radius: 10px;
+    }
+  </style>
+
+
+
+  <!-- User Login/Register Modal -->
+  <div id="authOverlay" class="modal-overlay">
+    <div class="auth-card">
+      <button class="auth-close" onclick="closeModals()" title="Close">&#10005;</button>
+      <div class="auth-panel">
+        <div class="auth-panel-inner">
+          <div class="auth-logo">Ayur<span>Smart</span></div>
+          <div class="auth-leaf">&#127807;</div>
+          <p class="auth-tagline">Ancient Wisdom,<br>Intelligent Care.</p>
+          <div class="auth-divider"></div>
+          <p class="auth-sub">Balance your Prakriti.<br>Begin your healing journey.</p>
+        </div>
+      </div>
+      <div class="auth-form-panel">
+        <div class="auth-tabs-row">
+          <button id="tabLogin" class="auth-tab active" onclick="toggleAuth('login')">Sign In</button>
+          <button id="tabRegister" class="auth-tab" onclick="toggleAuth('register')">Register</button>
+          <div class="auth-tab-indicator" id="tabIndicator"></div>
+        </div>
+        <form id="authForm" onsubmit="handleAuth(event)" autocomplete="off">
+          <div id="registerFields" style="display:none;">
+            <div class="field-group">
+              <label class="field-label">Full Name</label>
+              <input type="text" id="userName" placeholder="e.g. Arjun Mehta" class="auth-input">
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Age</label>
+                <input type="number" id="userAge" placeholder="Age" class="auth-input">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Gender</label>
+                <select id="userGender" class="auth-input auth-select">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Phone Number</label>
+              <input type="text" id="userPhone" placeholder="+91 98765 43210" class="auth-input">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Security Question</label>
+              <select id="userSecurityQuestion" class="auth-input auth-select">
+                <option value="">Select a security question</option>
+                <option value="What is your pet's name?">What is your pet's name?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                <option value="What is your favorite book?">What is your favorite book?</option>
+                <option value="In what city were you born?">In what city were you born?</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Security Answer</label>
+              <input type="text" id="userSecurityAnswer" placeholder="Your Answer" class="auth-input">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Email Address</label>
+              <input type="email" id="userEmail" placeholder="you@email.com" class="auth-input">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Username</label>
+            <input type="text" id="userUsername" placeholder="your_username" class="auth-input" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="userPass" placeholder="Min. 8 chars, 1 uppercase, 1 number" class="auth-input"
+                required>
+              <button type="button" class="toggle-pass" onclick="togglePassVis()">&#128065;</button>
+            </div>
+          </div>
+          <div class="captcha-row">
+            <canvas id="captchaCanvas" width="140" height="46"></canvas>
+            <button type="button" onclick="generateCaptcha()" class="captcha-refresh" title="Refresh">&#8635;</button>
+            <input type="text" id="captchaInput" placeholder="Enter CAPTCHA" class="auth-input captcha-inp" required>
+          </div>
+          <p class="captcha-error" id="captchaError" style="display:none;">Incorrect CAPTCHA. Please try again.</p>
+          <button type="submit" class="auth-submit" id="authSubmitBtn">Sign In</button>
+          <a href="javascript:void(0)" class="forgot-link" id="forgotLink" onclick="openForgotModal()">Forgot your
+            password?</a>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div id="adminOverlay" class="modal-overlay">
+    <div class="modal-card admin-border">
+      <button class="close-btn" onclick="closeModals()">×</button>
+      <h2 class="modal-title">Doctor Portal</h2>
+      <form onsubmit="handleAdminLogin(event)">
+        <input type="text" id="adminEmail" placeholder="username" class="input-field">
+        <input type="password" id="adminPass" placeholder="Admin Password" class="input-field">
+        <button type="submit" class="btn btn-green w-100">Login to Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="forgotOverlay" class="modal-overlay">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModals()">×</button>
+      
+      <!-- Step 1: Contact Number -->
+      <div id="forgotStep1">
+        <h2 class="modal-title">Forgot Password</h2>
+        <div class="field-group">
+          <label class="field-label">Enter Contact Number:</label>
+          <input type="text" id="forgotPhone" placeholder="9730113458" class="input-field">
+        </div>
+        <button type="button" class="btn btn-green w-100" onclick="findSecurityQuestion()">Find Security Question</button>
+        <button type="button" class="btn btn-outline w-100 mt-10" onclick="openAuthModal('login')">← Back to Login</button>
+      </div>
+
+      <!-- Step 2: Security Question -->
+      <div id="forgotStep2" style="display:none;">
+        <h2 class="modal-title">Forgot Password</h2>
+        <div class="field-group">
+          <label class="field-label">Security Question:</label>
+          <p id="displayQuestion" style="font-weight: 600; color: #1A4A2E; margin-bottom: 10px;"></p>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Your Answer:</label>
+          <input type="text" id="forgotAnswer" placeholder="Your Answer" class="input-field">
+        </div>
+        <button type="button" class="btn btn-green w-100" onclick="verifySecurityAnswer()">Verify Answer</button>
+        <button type="button" class="btn btn-outline w-100 mt-10" onclick="openAuthModal('login')">← Back to Login</button>
+      </div>
+
+      <!-- Step 3: Reset Password -->
+      <div id="forgotStep3" style="display:none;">
+        <h2 class="modal-title">Reset Password</h2>
+        <div class="field-group">
+          <label class="field-label">New Password:</label>
+          <input type="password" id="resetNewPass" placeholder="••••••••" class="input-field">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Confirm Password:</label>
+          <input type="password" id="resetConfPass" placeholder="••••••••" class="input-field">
+        </div>
+        <button type="button" class="btn btn-green w-100" onclick="resetPasswordFinal()">Reset Password</button>
+        <button type="button" class="btn btn-outline w-100 mt-10" onclick="openAuthModal('login')">← Back to Login</button>
+      </div>
+
+      <!-- Step 4: Success -->
+      <div id="forgotStep4" style="display:none; text-align: center;">
+        <h2 class="modal-title">Reset Password</h2>
+        <div style="margin: 20px 0; color: #1A4A2E;">
+          <span style="font-size: 40px;">✅</span>
+          <p style="font-weight: 600; margin-top: 10px;">Password has been reset successfully!</p>
+        </div>
+        <button type="button" class="btn btn-green w-100" onclick="openAuthModal('login')">Back to Login</button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ── QUIZ MODAL OVERLAY ── -->
+  <div class="overlay" id="overlay" onclick="overlayClick(event)">
+    <div class="modal" id="modal">
+      <div id="quiz-screen">
+        <div class="quiz-top-bar">
+          <div class="quiz-brand-group">
+            <span class="quiz-tree-icon">🌳</span>
+            <span class="quiz-header-title">AyurSmart Prakriti Quiz</span>
+          </div>
+          <button class="close-btn-white" onclick="closeModal()">✕</button>
+        </div>
+        
+        <div class="quiz-body-content">
+          <div class="quiz-progress-wrap">
+            <div class="progress-line"></div>
+            <div class="progress-dots" id="prog-dots"></div>
+            <span class="q-counter-alt" id="q-counter"></span>
+          </div>
+          
+          <h2 class="q-text-alt" id="q-text"></h2>
+          
+          <div class="options-grid" id="options"></div>
+          
+          <div class="quiz-footer">
+            <button class="btn-prev" id="btn-prev" onclick="prevQ()">PREVIOUS</button>
+            <button class="btn-next-alt" id="btn-next" onclick="nextQ()">NEXT ❯</button>
+          </div>
+        </div>
+      </div>
+      <div id="result-screen" class="hidden">
+        <div class="modal-top">
+          <span class="modal-brand">Your Prakriti</span>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="result-icon" id="res-icon"></div>
+        <h2 class="result-dosha" id="res-dosha"></h2>
+        <p class="result-sub" id="res-sub"></p>
+        <p class="result-desc" id="res-desc"></p>
+        <div class="score-row" id="score-row"></div>
+        <div id="remedy-section" class="hidden">
+          <div class="remedy-box recommended">
+            <h3>&#127823; Recommended Food</h3>
+            <div id="res-rec-food" class="remedy-content"></div>
+          </div>
+          <div class="remedy-box prohibited">
+            <h3>&#128683; Prohibited Food</h3>
+            <div id="res-pro-food" class="remedy-content"></div>
+          </div>
+        </div>
+        <div id="treatment-recommendations" class="hidden">
+          <h3 class="rec-title">🩺 Personalized Treatments</h3>
+          <div id="treatment-list" class="treatment-list"></div>
+        </div>
+        <button class="btn-retry" onclick="resetQuiz()">↺ Retake Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Us Modal -->
+  <div id="aboutOverlay" class="modal-overlay">
+    <div class="about-card">
+      <button class="about-close" onclick="closeModals()" title="Close">&#10005;</button>
+      <div class="about-banner">
+        <div class="about-banner-inner">
+          <div class="about-icon">&#127807;</div>
+          <h2 class="about-title">About Ayur<span>Smart</span></h2>
+          <p class="about-subtitle">Ancient Wisdom, Intelligent Care.</p>
+        </div>
+      </div>
+      <div class="about-body">
+        <div class="about-section">
+          <p>AyurSmart is designed to bridge the gap between ancient Ayurvedic wisdom and modern digital convenience,
+            making personalized healthcare accessible to everyone.</p>
+        </div>
+        <div class="about-divider-floral">&#10045; &#10045; &#10045;</div>
+        <div class="about-section">
+          <p>The platform identifies your specific body type—<strong>Vata, Pitta, or Kapha</strong>—through an
+            interactive <strong>Prakriti Quiz</strong> and recommends the most suitable treatments from a curated
+            selection of traditional therapies.</p>
+        </div>
+
+        <div class="about-divider-floral">&#10045; &#10045; &#10045;</div>
+
+        <!-- Doctor Details Section -->
+        <div class="about-section">
+          <h3
+            style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#2e5339;text-align:center;margin-bottom:16px;">
+            Meet Our Doctor</h3>
+          <div
+            style="background:linear-gradient(135deg,#f0f7f2,#e8f0ea);border:1px solid #c8dcc8;border-radius:14px;padding:20px;display:flex;gap:16px;align-items:center;">
+            <div
+              style="width:68px;height:68px;min-width:68px;background:linear-gradient(135deg,#2e5339,#4a7c59);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#d4af37;font-weight:700;border:3px solid #d4af37;">
+              🩺</div>
+            <div>
+              <div style="font-weight:700;font-size:1rem;color:#1a3a1a;margin-bottom:2px;">Dr. Praveen Kulkarni</div>
+              <div style="font-size:0.78rem;color:#d4af37;font-weight:600;margin-bottom:6px;">BAMS, MD (Ayurveda)</div>
+              <p style="font-size:0.8rem;color:#4a6a4a;line-height:1.5;margin:0;">
+                Specialist in Panchakarma therapy, Prakriti-based diagnosis, and holistic wellness management with over
+                10 years of clinical experience in traditional Ayurvedic medicine.
+              </p>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <span
+              style="background:#eaf4ed;color:#2e5339;padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;">📍 Behind Nexa Showroom, Ashok Nagar, Sadnakeri, Dharwad</span>
+            <span
+              style="background:#eaf4ed;color:#2e5339;padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;">📞
+              +91 98765 43210</span>
+            <span
+              style="background:#eaf4ed;color:#2e5339;padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;">🕐
+              Mon-Sat</span>
+          </div>
+        </div>
+
+        <div class="about-footer-btn">
+          <button class="btn btn-gold" onclick="closeModals(); openQuiz();">Begin Your Journey</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
